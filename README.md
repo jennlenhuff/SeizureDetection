@@ -1,6 +1,8 @@
 # SeizureDetection
 SeizureDetection Software
+
 ADD Lab Seizure Detection
+
 Contributors: Thomas Newell, John Wagner, Kyle Thomson
 
 
