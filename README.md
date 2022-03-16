@@ -10,9 +10,15 @@ Summary:
 This is a seizure detection algorithm designed for use in the ADD lab for designated animal models. 
 There are four algorithms that process an EEG signal and a main algorithm that combines the other algorithmic results, applies a threshold, and identifies potential seizures to be reviewed manually.
 To manually run the seizure detection, first edit the paths.txt under Variables\ to ensure the correct analysis paths are chosen. Then, change the environment path to the seizure detection tree.
-Open the MasterScript and run it, or run the run.bat file, or schedule a task using Windows Task Scheduler to repeatedly call the analysis at a fixed interval [expand on this perhaps with pictures].
-Once the analysis is complete, the thresholding result can be reviewed via the *.png's created for each channel in each analyzed folder. 
-The detection files may then be loaded into the Seizure Playback software for fast review.
+
+Steps to Run processing:
+1. Add SetPath() and isText() to the main MATLAB path. This allows these functions to be called and set to the envpath.
+2. Open the MasterScript and run it, or run the run.bat file, or schedule a task using Windows Task Scheduler to repeatedly call the analysis at a fixed interval.
+3. Once the analysis is complete, the thresholding result can be reviewed via the *.png's created for each channel in each analyzed folder. 
+4. The detection files may then be loaded into the Seizure Playback software for fast review.
+
+Notes about pushing changes to master:
+Carefully review any changes made to the branch with changes made to make sure that they're in compliance with inherent features of the analysis. Certain algorithm parameterization, checking for .det extension, age of .acq file etc. Once changes are pushed to master, RUN THE ANALYSIS ON THE TEST DATA PROVIDED BEFORE DEPLOYING TO EEG COMPUTER!
 
 The analysis utilizes MATLAB's parallel computing toolbox, if you'd like to disable this feature, change the 'parfor' in MasterScript to 'for'.
 
