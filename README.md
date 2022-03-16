@@ -30,10 +30,15 @@ Secondary output is a plot of each channel, each plot having the post-processed 
 
 Algorithms:
 All 4 algorithms use a windowing feature that divides the input data into 12.5 second windows, based on a sampling rate of 500 Hz.
+
 -Autocorrelation: difference between local maxima and minima
+
 -FFT: fourier transform of each 12.5 second window, filtered with WeightFunc (amplifies low frequency band ~9 Hz, attenuates high frequencies and notches at 60 Hz harmonics)
+
 -line length: "coast line" analysis, length of signal in each 12.5 second window
+
 -spike counting/sorting: counts spikes in windows based on a threshold
+
 -Combined algorithm: see manuscript for application of the combined algorithm and the equation used for the combination of previous four algorithms. Parameters for this function stored in Parameters.mat
 
 Variables:
