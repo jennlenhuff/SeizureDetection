@@ -13,9 +13,10 @@ To manually run the seizure detection, first edit the paths.txt under Variables\
 
 Steps to Run processing:
 1. Add SetPath() and isText() to the main MATLAB path. This allows these functions to be called and set to the envpath.
-2. Open the MasterScript and run it, or run the run.bat file, or schedule a task using Windows Task Scheduler to repeatedly call the analysis at a fixed interval.
-3. Once the analysis is complete, the thresholding result can be reviewed via the *.png's created for each channel in each analyzed folder. 
-4. The detection files may then be loaded into the Seizure Playback software for fast review.
+2. Go to the variables folder and set envpath.txt to the repository, and paths.txt to the directories with data to be analyzed.
+3. Open the MasterScript and run it, or run the run.bat file, or schedule a task using Windows Task Scheduler to repeatedly call the analysis at a fixed interval.
+4. Once the analysis is complete, the thresholding result can be reviewed via the *.png's created for each channel in each analyzed folder. 
+5. The detection files may then be loaded into the Seizure Playback software for fast review.
 
 Notes about pushing changes to master:
 Carefully review any changes made to the branch with changes made to make sure that they're in compliance with inherent features of the analysis. Certain algorithm parameterization, checking for .det extension, age of .acq file etc. Once changes are pushed to master, RUN THE ANALYSIS ON THE TEST DATA PROVIDED BEFORE DEPLOYING TO EEG COMPUTER!
