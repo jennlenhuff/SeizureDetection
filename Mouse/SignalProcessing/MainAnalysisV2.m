@@ -1,4 +1,4 @@
-function OUTPUTS = MainAnalysisV2(file)
+function OUTPUTS = MainAnalysisV2(file, spikethresh)
 %% Main Analysis function takes file being analyzed, hour of data from single channel,
 % and the channel number that is being analyzed. Returns outputs from
 % analysis modules in structure, OUTPUTS.
@@ -47,7 +47,7 @@ for chan = 1:file.nChannels                         %Stepping through channels..
         linelengths = LL_V3(data(chan,:),window,step);                %Run Linelength algorithm.
         LLTOT(chan,1:size(fftvals,2)) = linelengths; %Stores hour of data in LLTOT.
         %SS
-        SPIKECOUNTchan = SS_V3(data(chan,:),window,step,7.6e10);      %Run Spike analysis algorithm.
+        SPIKECOUNTchan = SS_V3(data(chan,:),window,step,spikethresh);      %Run Spike analysis algorithm.
         SPIKETOT(chan,1:size(fftvals,2)) = SPIKECOUNTchan; %Stores hour of data in SPIKETOT.
  
     if chan == file.nChannels

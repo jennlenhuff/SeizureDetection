@@ -1,16 +1,13 @@
-function AutomatedSzDetect_DeployTest(PATH)
+function AutomatedSzDetect_DeployTest(PATH, Parameters)
 %Automated Sz Detection V6
 %Original versions (V1-V6) Written by Thomas Newell
 %Last Update: 11/19/2021
 % All recent updates have been to time performance and not to altering
 % original intention of the output/analysis.
-
 NOW = clock;            %Get current time.
-% 
-NOW_DATE = datetime(NOW(1), NOW(2), NOW(3));
+
 keep('NOW','paths','PATH','project_file','AllPaths')                  %Clear all variables that aren']t NOW, pahts, or PATH (speeds things up when handling multiple runs).
 disp(['Starting analysis of ' PATH]);
-disp('RUNNING TEST')
 %Display which directory is being analyzed to the command window.
 foldlist = dir(PATH);                      %Get a list of folders in that directory.
 fold = 3;                                   %The first two folders are junk/hidden. Start with the third.
@@ -26,23 +23,33 @@ while fold < size(foldlist,1) + 1           %Go through all the folders in the d
             folder_month = str2double(folddate(5:6));
             folder_day = str2double(folddate(7:8));
             folder_date = datetime(folder_year, folder_month, folder_day);
-            date_difference = days(NOW_DATE - folder_date);
-            if date_difference < 10000  %Must be less than 14 days old. Change this if necessary.
+            date_difference = days(datetime(NOW) - folder_date);
+            % Check the time that file was recorded and if it's too old to
+            % be processed (>14 days).
+            if date_difference < 10000
                 if NOW(3) ~= str2double(folddate(7:8))  %As long as the date isn't the same... (no analyzing active recording directory).
                     %THERE MUST BE NO .DET FILE (Already analyzed)
-                    dirlist = dir(folder);                              %Get a structure full of all the items in the folder.
-                    isDET = -1;                                         %Initialize under assumption that no ACQ has been analyzed.
-                    for D = 3:size(dirlist,1)                           %Going through each item in the folder...
-                        % Using .dt2 extension so no conflict from V6 of
-                        % seizure detection
-                        if strcmp(dirlist(D,1).name(end-2:end),'det')       %Check if the item is a .det file.
-                            isDET = D;                                  %Mark that item is a .det file.
+                    % Structure array with every item in folder
+                    dirlist = dir(folder);
+
+                    % initialize flag if *.acq has been analyzed
+                    isDET = -1;
+                    for D = 3:size(dirlist,1)
+                        % define a pattern to look for detection files
+                        pattern = ['.det'];
+                        %Check if the item is a .det file.
+                        if contains(dirlist(D,1).name, pattern)
+                            % set flag to meet condition that *.acq is
+                            % analyzed
+                            isDET = D;
                         end
                     end
-                    if isDET > 0                                        %If a .det was found in the folder...
-                        disp(['There is already a .dt2 file for folder ' folddate]);    %Display that...
-                        fold = fold + 1;                                %Iterate.
-                        continue
+                    %If a .det was found in the folder...
+                    if isDET > 0                                        
+                        disp(['There is already a .det file for folder ' folddate]);
+                        % move on to next folder in analysis path
+                        fold = fold + 1;
+                        continue;
                     else
                         for k = 3:size(dirlist,1)                       %Go through the list of items in the directory again.
                             name = dirlist(k,1).name;                   %Get the name of an item.
@@ -68,7 +75,7 @@ while fold < size(foldlist,1) + 1           %Go through all the folders in the d
                         tic;                                                %Start a timer.
 
                         % Call MainAnalysis function
-                        OUTPUTS = MainAnalysisV2(info);
+                        OUTPUTS = MainAnalysisV2(info, Parameters.SpikeThresh);
 
                         % Get outputs from analysis modules
                         AC = OUTPUTS.AC;
@@ -91,7 +98,7 @@ while fold < size(foldlist,1) + 1           %Go through all the folders in the d
                             for int = 1:size(AC,1)                                          %Go through each channel in the results (First dimension).
                                 PLAY(int,:) = interp1(biggest,AC(int,:),smallest);          %Interpolate so that the AC results are the same size as the largest...
                             end
-                            AC = PLAY;                                                      %Update AC in interpolated form.
+                            AC = PLAY;                                                      %Update AC in interpolated form. 
                         end
                         PLAY = zeros(size(AC,1),smallest(end));                             %Initialize temporary matrix.
                         if size(FFT,2) > smallest(end)                                      %If FFT results are bigger than the smallest results...
@@ -156,28 +163,12 @@ while fold < size(foldlist,1) + 1           %Go through all the folders in the d
                         AlgorithmResults.Normalized.LL = LLNEWnorm1;
                         AlgorithmResults.Normalized.SS = SSNEWnorm1;
 
-                        % % % original parameters % % %
-                        % weights
-                        Parameters.ACw = 0.17;
-                        Parameters.FFTw = 0.49;
-                        Parameters.LLw = 0.87;
-                        Parameters.SSw = 0.96;
-
-                        % exponential scalars
-                        Parameters.ACe = 1.50;
-                        Parameters.FFTe = 1.57;
-                        Parameters.LLe = 1.82;
-                        Parameters.SSe = 1.70;
-
-                        % threshold
-                        Parameters.Threshold = 2.9;
-
                         % Use parameters to combine algorithms
                         CombinedResults = CombineAlgos(AlgorithmResults, Parameters, info);
                         % Return threshold values out of SaveDetFile to
                         % pass to PlotDetection results
-                        thrval = SaveDetFile(CombinedResults.COMB, CombinedResults.DetTimes, direc, folddate, Parameters.Threshold);
-%                         PlotDetectionResults(CombinedResults.COMB, thrval, info);
+                        thrval = SaveDetFile(CombinedResults.COMB, CombinedResults.DetTimes, direc, n, Parameters.Threshold);
+                        PlotDetectionResults(CombinedResults.COMB, thrval, info);
 
                         nowza = clock;          %Get current time.
                         disp(['Finished at ' num2str(nowza(4)) ':' num2str(nowza(5))]);     %Display when seizure detection for the current file was completed.
@@ -189,8 +180,8 @@ while fold < size(foldlist,1) + 1           %Go through all the folders in the d
                 disp([folddate ' is too old to review']);   %Display if the current folder is older than the age threshold.
             end
         end
+        fold = fold + 1; 	%Iterate folder
     end
-    fold = fold + 1; 	%Iterate folder
 end
 
 end
