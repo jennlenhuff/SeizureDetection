@@ -23,10 +23,10 @@ while fold < size(foldlist,1) + 1           %Go through all the folders in the d
             folder_month = str2double(folddate(5:6));
             folder_day = str2double(folddate(7:8));
             folder_date = datetime(folder_year, folder_month, folder_day);
-            date_difference = days(NOW_DATE - folder_date);
+            date_difference = days(datetime(NOW) - folder_date);
             % Check the time that file was recorded and if it's too old to
             % be processed (>14 days).
-            if date_difference < 14
+            if date_difference < 60
                 if NOW(3) ~= str2double(folddate(7:8))  %As long as the date isn't the same... (no analyzing active recording directory).
                     %THERE MUST BE NO .DET FILE (Already analyzed)
                     % Structure array with every item in folder
@@ -75,7 +75,7 @@ while fold < size(foldlist,1) + 1           %Go through all the folders in the d
                         tic;                                                %Start a timer.
 
                         % Call MainAnalysis function
-                        OUTPUTS = MainAnalysisV2(info);
+                        OUTPUTS = MainAnalysisV2(info, Parameters.SpikeThresh);
 
                         % Get outputs from analysis modules
                         AC = OUTPUTS.AC;
@@ -167,8 +167,9 @@ while fold < size(foldlist,1) + 1           %Go through all the folders in the d
                         CombinedResults = CombineAlgos(AlgorithmResults, Parameters, info);
                         % Return threshold values out of SaveDetFile to
                         % pass to PlotDetection results
-                        thrval = SaveDetFile(CombinedResults.COMB, CombinedResults.combszseconds, direc, n, Parameters.Threshold);
-                        PlotDetectionResults(COMB, thrval, info);
+                        pathname = [direc '\' n(1:end-8)];
+                        thrval = SaveDetFile(CombinedResults.COMB, CombinedResults.DetTimes, direc, n, Parameters.Threshold);
+                        PlotDetectionResults(CombinedResults.COMB, thrval, info, pathname);
 
                         nowza = clock;          %Get current time.
                         disp(['Finished at ' num2str(nowza(4)) ':' num2str(nowza(5))]);     %Display when seizure detection for the current file was completed.

@@ -1,2 +1,3 @@
 @ECHO OFF
-"matlab.exe" -nodisplay -r MasterScript_Deploy"
+"matlab.exe" -r "MasterScript_Rat"
+PAUSE
