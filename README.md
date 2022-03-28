@@ -17,16 +17,24 @@ Steps to Run processing:
 3. Once the analysis is complete, the thresholding result can be reviewed via the *.png's created for each channel in each analyzed folder. 
 4. The detection files may then be loaded into the Seizure Playback software for fast review.
 
+How to set up windows task:
+1. Open Task Scheduler and click Create Task
+2. Assign descriptive name and description of task function
+3. For seizure detection, set trigger to occure daily at 12:30 AM
+4. Under Actions, create new, choose matlab as program
+5. For Actions Arguments, type "matlab.exe" -batch "script name goes here" (INCLUDE QUOTES)
+6. Start in: path to seizure detection production folder
+
 Notes about pushing changes to master:
 Carefully review any changes made to the branch with changes made to make sure that they're in compliance with inherent features of the analysis. Certain algorithm parameterization, checking for .det extension, age of .acq file etc. Once changes are pushed to master, RUN THE ANALYSIS ON THE TEST DATA PROVIDED BEFORE DEPLOYING TO EEG COMPUTER!
 
 The analysis utilizes MATLAB's parallel computing toolbox, if you'd like to disable this feature, change the 'parfor' in MasterScript to 'for'.
 
-- organization and description of functions and outputs here
-The primary outputs from the seizure detection is a text file saved with extension *.det. 
+Outputs:
+- The primary outputs from the seizure detection is a text file saved with extension *.det. 
 Detection files have two columns: first column corresponds to channel, second is time of the detection
 
-Secondary output is a plot of each channel, each plot having the post-processed EEG signal with a line indicating the threshold for detections
+- Secondary output is a plot of each channel, each plot having the post-processed EEG signal with a line indicating the threshold for detections
 
 Algorithms:
 All 4 algorithms use a windowing feature that divides the input data into 12.5 second windows, based on a sampling rate of 500 Hz.
